@@ -35,6 +35,9 @@
 #include <plat/omap_hwmod.h>
 #include <plat/omap-pm.h>
 
+#include <plat/omap_hwmod.h>
+#include <../mach-omap2/dvfs.h>
+
 #include <video/omapdss.h>
 
 #include "dss.h"
@@ -47,9 +50,9 @@ static struct {
 	struct regulator *vdds_sdi_reg;
 } core;
 
-static char *def_disp_name;
-module_param_named(def_disp, def_disp_name, charp, 0);
-MODULE_PARM_DESC(def_disp, "default display name");
+char *def_disp_name;
+module_param_named(def_disp, def_disp_name, charp, S_IRUGO);
+MODULE_PARM_DESC(def_disp, "Default display name");
 
 #ifdef DEBUG
 unsigned int dss_debug;
@@ -194,6 +197,17 @@ void omap_dss_reset_high_bandwidth(struct device *dss_dev)
 	DSSDBG("Failed to reset high L3 bus speed\n");
 }
 
+static void dss_set_L3_speed(int mhz)
+{
+	struct device *l3_dev, *dss_dev;
+	l3_dev = omap_hwmod_name_get_dev("l3_main_1");
+	dss_dev = omap_hwmod_name_get_dev("dss");
+	if (l3_dev && dss_dev)
+		omap_device_scale(dss_dev, l3_dev, mhz*1000000);
+	else
+		DSSERR("Failed to setup of L3 bus speed\n");
+}
+
 /* PLATFORM DEVICE */
 static int omap_dss_probe(struct platform_device *pdev)
 {
@@ -257,6 +271,21 @@ static int omap_dss_probe(struct platform_device *pdev)
 		if (def_disp_name && strcmp(def_disp_name, dssdev->name) == 0)
 			pdata->default_device = dssdev;
 
+		if (def_disp_name && (strcmp(def_disp_name, "hdmi") == 0)) {
+			if (dssdev->type == OMAP_DISPLAY_TYPE_HDMI) {
+				if ((cpu_is_omap443x() || cpu_is_omap446x()) &&
+				(strcmp(hdmi_options, "1920x1080") == 0)) {
+					/* We setup OPP100 because 4430 and
+					 * 4460 has no enough performance
+					 * of L3 for 1080p resolution
+					 */
+					dss_set_L3_speed(200);
+				}
+				pdata->default_device = dssdev;
+			} else
+				continue;
+		}
+
 		r = omap_dss_register_device(dssdev);
 		if (r) {
 			DSSERR("device %d %s register failed %d\n", i,
@@ -267,6 +296,9 @@ static int omap_dss_probe(struct platform_device *pdev)
 
 			goto err_register;
 		}
+
+		if (def_disp_name && strcmp(def_disp_name, dssdev->name) == 0)
+			pdata->default_device = dssdev;
 	}
 
 	return 0;

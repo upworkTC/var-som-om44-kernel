@@ -214,6 +214,7 @@ struct seq_file;
 struct platform_device;
 
 /* core */
+extern char *def_disp_name;
 struct bus_type *dss_get_bus(void);
 struct regulator *dss_get_vdds_dsi(void);
 struct regulator *dss_get_vdds_sdi(void);
@@ -558,6 +559,8 @@ static inline void venc_uninit_platform_driver(void)
 
 /* HDMI */
 #ifdef CONFIG_OMAP4_DSS_HDMI
+#define strtol simple_strtol
+extern char *hdmi_options;
 int hdmi_init_platform_driver(void);
 void hdmi_uninit_platform_driver(void);
 int hdmi_init_display(struct omap_dss_device *dssdev);

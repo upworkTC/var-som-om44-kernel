@@ -31,6 +31,9 @@
 
 #include <video/hdmi_ti_4xxx_ip.h>
 
+char *hdmi_options = "1280x720";
+module_param(hdmi_options, charp, S_IRUGO);
+
 static struct {
 	struct mutex hdmi_lock;
 	struct switch_dev hpd_switch;
@@ -170,19 +173,26 @@ static struct attribute_group hdmi_panel_attr_group = {
 
 static int hdmi_panel_probe(struct omap_dss_device *dssdev)
 {
+	char *yres_ptr = strchr(hdmi_options, 'x');
+
 	DSSDBG("ENTER hdmi_panel_probe\n");
 
 	dssdev->panel.config = OMAP_DSS_LCD_TFT |
 			OMAP_DSS_LCD_IVS | OMAP_DSS_LCD_IHS;
 
 	/*
-	 * Initialize the timings to 640 * 480
+	 * Initialize the timings to 1280 * 720 by default
 	 * This is only for framebuffer update not for TV timing setting
 	 * Setting TV timing will be done only on enable
 	 */
 	if (dssdev->panel.timings.x_res == 0)
 		dssdev->panel.timings = (struct omap_video_timings)
 			{640, 480, 31746, 128, 24, 29, 9, 40, 2};
+
+	dssdev->panel.timings.x_res =
+		(unsigned short) strtol(hdmi_options, NULL, 10);
+	dssdev->panel.timings.y_res =
+		(unsigned short) strtol(++yres_ptr, NULL, 10);
 
 	/* sysfs entry to provide user space control to set deepcolor mode */
 	if (sysfs_create_group(&dssdev->dev.kobj, &hdmi_panel_attr_group))
@@ -205,6 +215,13 @@ static int hdmi_panel_enable(struct omap_dss_device *dssdev)
 	DSSDBG("ENTER hdmi_panel_enable\n");
 
 	mutex_lock(&hdmi.hdmi_lock);
+
+	if (def_disp_name && (strcmp(def_disp_name, "hdmi") == 0) &&
+		(dssdev->state == OMAP_DSS_DISPLAY_ACTIVE)) {
+		DSSDBG("DSS:HDMI Panel<%s>: HDMI Panel already enabled\n",
+								__func__);
+		goto err;
+	}
 
 	if (dssdev->state != OMAP_DSS_DISPLAY_DISABLED) {
 		r = -EINVAL;

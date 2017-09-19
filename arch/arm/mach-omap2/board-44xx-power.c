@@ -28,6 +28,13 @@
 
 static struct regulator_consumer_supply vmmc_supply[] = {
 	REGULATOR_SUPPLY("vmmc", "omap_hsmmc.0"),
+}
+;
+
+static struct regulator_consumer_supply vusim_supply[] = {
+	{
+		.supply = "vusim",
+	},
 };
 
 /* VMMC1 for MMC1 card */
@@ -68,19 +75,18 @@ static struct regulator_init_data vpp = {
 
 static struct regulator_init_data vusim = {
 	.constraints = {
-		.min_uV			= 1200000,
+		.min_uV			= 2900000,
 		.max_uV			= 2900000,
 		.apply_uV		= true,
-		.valid_modes_mask	= REGULATOR_MODE_NORMAL
-					| REGULATOR_MODE_STANDBY,
+		.valid_modes_mask	= REGULATOR_MODE_NORMAL,
 		.valid_ops_mask	 = REGULATOR_CHANGE_VOLTAGE
 					| REGULATOR_CHANGE_MODE
 					| REGULATOR_CHANGE_STATUS,
-		.state_mem = {
-			.disabled       = true,
-		},
-		.initial_state          = PM_SUSPEND_MEM,
+					
+		.always_on	= true,
 	},
+	.num_consumer_supplies	= ARRAY_SIZE(vusim_supply),
+	.consumer_supplies		= vusim_supply,
 };
 
 static struct regulator_init_data vana = {
@@ -325,6 +331,7 @@ static struct regulator_init_data vmem = {
 	},
 };
 
+#ifndef CONFIG_MACH_VAR_SOM_OM4460
 static int batt_table[] = {
 	/* adc code for temperature in degree C */
 	929, 925, /* -2 ,-1 */
@@ -348,6 +355,7 @@ static struct twl4030_bci_platform_data bci_data = {
 	.tblsize			= ARRAY_SIZE(batt_table),
 	.sense_resistor_mohm		= 10,
 };
+#endif
 
 static struct twl4030_usb_data omap4_usbphy_data = {
 	.phy_init	= omap4430_phy_init,
@@ -362,7 +370,9 @@ static struct twl4030_codec_audio_data twl6040_audio = {
 	.hs_right_step  = 0x0f,
 	.hf_left_step   = 0x1d,
 	.hf_right_step  = 0x1d,
+#ifndef CONFIG_MACH_VAR_SOM_OM4460
 	.vddhf_uV	= 4075000,
+#endif
 };
 
 static struct twl4030_codec_vibra_data twl6040_vibra = {
@@ -403,7 +413,11 @@ static int twl6040_init(void)
 static struct twl4030_codec_data twl6040_codec = {
 	.audio          = &twl6040_audio,
 	.vibra          = &twl6040_vibra,
+#ifndef CONFIG_MACH_VAR_SOM_OM4460
 	.audpwron_gpio  = 127,
+#else
+	.audpwron_gpio  = 182,
+#endif
 	.naudint_irq    = OMAP44XX_IRQ_SYS_2N,
 	.irq_base       = TWL6040_CODEC_IRQ_BASE,
 	.init		= twl6040_init,
@@ -429,6 +443,7 @@ static struct twl4030_platform_data twldata = {
 	.vaux2		= &vaux2,
 	.vaux3		= &vaux3,
 
+#ifndef CONFIG_MACH_VAR_SOM_OM4460
 	/* TWL6032 regulators at OMAP447X based SOMs */
 	.ldo1		= &vpp,
 	.ldo2		= &vaux1,
@@ -439,6 +454,7 @@ static struct twl4030_platform_data twldata = {
 	.ldo7		= &vusim,
 	.ldoln		= &vdac,
 	.ldousb		= &vusb,
+#endif
 
 	/* TWL6030/6032 common resources */
 	.clk32kg	= &clk32kg,
@@ -450,7 +466,9 @@ static struct twl4030_platform_data twldata = {
 	.v2v1		= &v2v1,
 
 	/* children */
+#ifndef CONFIG_MACH_VAR_SOM_OM4460
 	.bci		= &bci_data,
+#endif
 	.usb		= &omap4_usbphy_data,
 	.codec		= &twl6040_codec,
 	.madc		= &twl6030_gpadc,
@@ -462,6 +480,7 @@ static struct twl4030_platform_data twldata = {
 
 void __init omap4_power_init(void)
 {
+#ifndef CONFIG_MACH_VAR_SOM_OM4460
 	/*
 	 * VCORE3 & VMEM are not used in 4460. By register it to regulator
 	 * framework will ensures that resources are disabled.
@@ -470,6 +489,7 @@ void __init omap4_power_init(void)
 		twldata.vdd3 = &vcore3;
 		twldata.vmem = &vmem;
 	}
+#endif	
 
 	omap4_pmic_init("twl6030", &twldata);
 }

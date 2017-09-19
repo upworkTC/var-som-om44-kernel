@@ -266,6 +266,17 @@ obj-$(CONFIG_MACH_IGEP0020)		+= board-igep0020.o \
 					   hsmmc.o
 obj-$(CONFIG_MACH_OMAP3_TOUCHBOOK)	+= board-omap3touchbook.o \
 					   hsmmc.o
+
+# board-var-som-om4460
+obj-$(CONFIG_MACH_VAR_SOM_OM4460)	+= board-var-som-om4460.o \
+ 					   omap_phy_internal.o \
+					   hsmmc.o \
+					   board-44xx-identity.o \
+					   board-44xx-power.o \
+					   board-44xx-serial.o \
+ 					   omap4_apps_brd_id.o \
+					   variscite_blob.o
+
 obj-$(CONFIG_MACH_OMAP_4430SDP)		+= board-4430sdp.o \
 					   board-blaze-touch.o \
 					   board-blaze-panel.o \
@@ -278,6 +289,7 @@ obj-$(CONFIG_MACH_OMAP_4430SDP)		+= board-4430sdp.o \
 					   hsmmc.o \
 					   omap_phy_internal.o \
 					   omap4_apps_brd_id.o
+					   
 obj-$(CONFIG_MACH_OMAP_BLAZE)		+= board-44xx-tablet.o \
 					   board-44xx-identity.o \
 					   board-44xx-power.o \

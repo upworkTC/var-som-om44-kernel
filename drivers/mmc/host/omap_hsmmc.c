@@ -409,11 +409,14 @@ static int omap_hsmmc_235_set_power(struct device *dev, int slot, int power_on,
 	return ret;
 }
 
+#if !((defined(CONFIG_WL12XX) || defined(CONFIG_WL12XX_MODULE)) && 	\
+		defined(CONFIG_MACH_VAR_SOM_OM4460))
 static int omap_hsmmc_4_set_power(struct device *dev, int slot, int power_on,
 					int vdd)
 {
 	return 0;
 }
+#endif
 
 static int omap_hsmmc_1_set_sleep(struct device *dev, int slot, int sleep,
 				  int vdd, int cardsleep)
@@ -464,11 +467,14 @@ static int omap_hsmmc_235_set_sleep(struct device *dev, int slot, int sleep,
 		return regulator_enable(host->vcc_aux);
 }
 
+#if !((defined(CONFIG_WL12XX) || defined(CONFIG_WL12XX_MODULE)) && 	\
+		defined(CONFIG_MACH_VAR_SOM_OM4460))
 static int omap_hsmmc_4_set_sleep(struct device *dev, int slot, int sleep,
 					int vdd, int cardsleep)
 {
 	return 0;
 }
+#endif
 
 static int omap_hsmmc_reg_get(struct omap_hsmmc_host *host)
 {
@@ -485,17 +491,32 @@ static int omap_hsmmc_reg_get(struct omap_hsmmc_host *host)
 	case OMAP_MMC2_DEVID:
 	case OMAP_MMC3_DEVID:
 	case OMAP_MMC5_DEVID:
+#if (defined(CONFIG_WL12XX) || defined(CONFIG_WL12XX_MODULE)) && 	\
+		defined(CONFIG_MACH_VAR_SOM_OM4460)
+	case OMAP_MMC4_DEVID:
+#endif
 		/* Off-chip level shifting, or none */
 		mmc_slot(host).set_power = omap_hsmmc_235_set_power;
 		mmc_slot(host).set_sleep = omap_hsmmc_235_set_sleep;
 		break;
+#if !((defined(CONFIG_WL12XX) || defined(CONFIG_WL12XX_MODULE)) && 	\
+		defined(CONFIG_MACH_VAR_SOM_OM4460))
 	case OMAP_MMC4_DEVID:
 		mmc_slot(host).set_power = omap_hsmmc_4_set_power;
 		mmc_slot(host).set_sleep = omap_hsmmc_4_set_sleep;
+		break;
+#endif
 	default:
 		pr_err("MMC%d configuration not supported!\n", host->id);
 		return -EINVAL;
 	}
+	
+	// Enable usim regulator regulator 
+    reg = regulator_get(host->dev, "vusim");
+	if (IS_ERR(reg))
+		printk("vusim regulator missing\n");
+	else
+		regulator_enable(reg);
 
 	reg = regulator_get(host->dev, "vmmc");
 	if (IS_ERR(reg)) {

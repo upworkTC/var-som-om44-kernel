@@ -294,8 +294,19 @@ omapfb.mirror=<y|n>
 	- Default mirror for all framebuffers. Only works with DMA rotation.
 
 omapdss.def_disp=<display>
-	- Name of default display, to which all overlays will be connected.
-	  Common examples are "lcd" or "tv".
+	- Name of primary display. If "hdmi" is present, HDMI panel will be
+	  primary display and LCD panel will be disabled. If "lcd" is present,
+	  LCD panel will be primary display, but HDMI panel will be enabled.
+	  By default LCD display will be initialized as primary. Common examples
+	  are "lcd" or "hdmi".
+
+omapdss.hdmi_options=<xres>x<yres>
+	- In case when HDMI display was selected as primary (omapdss.def_disp
+	  option) there is opportunity to set HDMI display resolution by
+	  initializing this option. By default 720p resolution will be used.
+	  Example:
+
+	  1920x1080 - 1080p resolution will be used.
 
 omapdss.debug=<y|n>
 	- Enable debug printing. You have to have DSS debug support enabled in

@@ -944,7 +944,6 @@ static void twl6040_hs_jack_report(struct snd_soc_codec *codec,
 
 	/* Sync status */
 	status = twl6040_read_reg_volatile(codec, TWL6040_REG_STATUS);
-	if (status & TWL6040_PLUGCOMP)
 		state = report;
 
 	mutex_unlock(&priv->mutex);

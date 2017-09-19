@@ -719,7 +719,21 @@ int omapvid_setup_overlay(struct omap_vout_device *vout,
 		info.rotation = vout->rotation;
 		info.rotation_type = OMAP_DSS_ROT_VRFB;
 		info.screen_width = 2048;
-	}
+	/* FIXME : workaround for Android G5 AFS.
+		AFS setting overlay to Blaze LCD resolution.
+		This work around sets overlay to tv resolution and centralizes the display
+		Remove when playback application fixed in Android AFS
+	*/
+        if (sysfs_streq(ovl->manager->name, "tv")) {
+                if (outw < info.width || outh < info.height){
+//                      printk(" Wrong output  info.width %d outw %d info.height %d outh %d\n\r", info.width,outw,info.height,outh);
+                        info.out_width = info.width;
+                        info.out_height = info.height;
+                        info.pos_x = (ovl->manager->device->panel.timings.x_res - info.width) / 2;
+                        info.pos_y = (ovl->manager->device->panel.timings.y_res - info.height) / 2;
+                }
+
+        }
 
 	v4l2_dbg(1, debug, &vout->vid_dev->v4l2_dev,
 		"%s enable=%d addr=%x width=%d\n height=%d color_mode=%d\n"

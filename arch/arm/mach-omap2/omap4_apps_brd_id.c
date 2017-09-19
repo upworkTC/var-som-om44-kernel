@@ -96,5 +96,8 @@ __init int omap_init_board_version(int forced_rev)
 		}
 	}
 
+	board_revision = OMAP4_BLAZE;
+	board_id = OMAP4_BLAZE_ID;
+
 	return board_revision;
 }

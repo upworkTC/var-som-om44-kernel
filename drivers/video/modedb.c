@@ -972,7 +972,7 @@ static int fb_try_mode(struct fb_var_screeninfo *var, struct fb_info *info,
     var->vsync_len = mode->vsync_len;
     var->sync = mode->sync;
     var->vmode = mode->vmode;
-    if (info->fbops->fb_check_var)
+    if (info && info->fbops->fb_check_var)
     	err = info->fbops->fb_check_var(var, info);
     var->activate &= ~FB_ACTIVATE_TEST;
     return err;
@@ -1148,7 +1148,7 @@ done:
 		 * try to find a mode with a refresh rate closest to the
 		 * standard 60 Hz.
 		 */
-		if (db != modedb &&
+		if (db != modedb && info &&
 		    info->monspecs.vfmin && info->monspecs.vfmax &&
 		    info->monspecs.hfmin && info->monspecs.hfmax &&
 		    info->monspecs.dclkmax) {
@@ -1164,6 +1164,8 @@ done:
 		if ((name_matches(db[i], name, namelen) ||
 		    (res_specified && res_matches(db[i], xres, yres))) &&
 		    !fb_try_mode(var, info, &db[i], bpp)) {
+			if (!interlace && (db[i].vmode == FB_VMODE_INTERLACED))
+				continue;
 			if (refresh_specified && db[i].refresh == refresh) {
 				return 1;
 			} else {
@@ -1174,6 +1176,7 @@ done:
 			}
 		}
 	}
+
 	if (best != -1) {
 		fb_try_mode(var, info, &db[best], bpp);
 		return (refresh_specified) ? 2 : 1;

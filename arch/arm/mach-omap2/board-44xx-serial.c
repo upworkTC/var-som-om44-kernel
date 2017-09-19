@@ -83,7 +83,7 @@ static struct omap_device_pad tablet_uart3_pads[] __initdata = {
 		.idle	= OMAP_PIN_INPUT | OMAP_MUX_MODE0,
 	},
 };
-
+#ifndef CONFIG_MACH_VAR_SOM_OM4460
 static struct omap_device_pad tablet_uart4_pads[] __initdata = {
 	{
 		.name	= "uart4_tx.uart4_tx",
@@ -95,7 +95,7 @@ static struct omap_device_pad tablet_uart4_pads[] __initdata = {
 		.enable	= OMAP_PIN_INPUT | OMAP_MUX_MODE0,
 		.idle	= OMAP_PIN_INPUT | OMAP_MUX_MODE0,
 	},
-};
+#endif
 
 static struct omap_uart_port_info tablet_uart_info_uncon __initdata = {
 	.use_dma	= 0,
@@ -133,7 +133,10 @@ void __init board_serial_init(void)
 		ARRAY_SIZE(tablet_uart2_pads), &tablet_wilink_uart_info);
 	omap_serial_init_port_pads(2, tablet_uart3_pads,
 		ARRAY_SIZE(tablet_uart3_pads), &tablet_uart_info);
+#ifndef CONFIG_MACH_VAR_SOM_OM4460
 	omap_serial_init_port_pads(3, tablet_uart4_pads,
 		ARRAY_SIZE(tablet_uart4_pads), &tablet_uart_info_uncon);
+#endif		
+
 }
 

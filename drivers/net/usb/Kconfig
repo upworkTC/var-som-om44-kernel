@@ -228,8 +228,16 @@ config USB_NET_SMSC75XX
 	depends on USB_USBNET
 	select CRC32
 	help
-	  This option adds support for SMSC LAN95XX based USB 2.0
+	  This option adds support for SMSC LAN75XX based USB 2.0
 	  Gigabit Ethernet adapters.
+
+config USB_NET_SMSC7500
+	tristate "SMSC LAN7500 USB 2.0 Gigabit Ethernet device"
+	depends on USB_USBNET
+	select CRC32
+	help
+	  Support for SMSC LAN7500 USB 2.0 Gigabit Ethernet adapter.
+	  This is original SMSC driver v1.02.00 ported to newer kernels.
 
 config USB_NET_SMSC95XX
 	tristate "SMSC LAN95XX based USB 2.0 10/100 ethernet devices"

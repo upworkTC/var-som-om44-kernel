@@ -42,6 +42,19 @@ config TOUCHSCREEN_ADS7846
 	  To compile this driver as a module, choose M here: the
 	  module will be called ads7846.
 
+config TOUCHSCREEN_CTW6120
+	tristate "CTW1620 based touchscreens"
+	depends on I2C
+	help
+	  Say Y here if you have a touchscreen interface using the
+	  CTW8120 controller, and your board-specific
+	  initialization code includes that in its table of I2C devices.
+
+	  If unsure, say N (but it's safe to say "Y").
+
+	  To compile this driver as a module, choose M here: the
+	  module will be called ctw6120.
+
 config TOUCHSCREEN_AD7877
 	tristate "AD7877 based touchscreens"
 	depends on SPI_MASTER
@@ -657,6 +670,17 @@ config TOUCHSCREEN_TOUCHIT213
 	  To compile this driver as a module, choose M here: the
 	  module will be called touchit213.
 
+config TOUCHSCREEN_TSC2004
+	tristate "TSC2004 based touchscreens"
+	depends on I2C
+	help
+	  Say Y here if you have a TSC2004 based touchscreen.
+
+	  If unsure, say N.
+
+	  To compile this driver as a module, choose M here: the
+	  module will be called tsc2004.
+	  
 config TOUCHSCREEN_TSC2005
         tristate "TSC2005 based touchscreens"
         depends on SPI_MASTER && GENERIC_HARDIRQS

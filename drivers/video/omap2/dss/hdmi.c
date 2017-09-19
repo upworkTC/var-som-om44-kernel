@@ -466,16 +466,14 @@ static int hdmi_power_on(struct omap_dss_device *dssdev)
 		dssdev->panel.timings.y_res);
 
 	if (!hdmi.custom_set) {
-		u32 cea_code = 0;
-		struct fb_videomode default_mode;
+		struct fb_videomode video_mode;
+		struct fb_var_screeninfo screen_info;
 
-		cea_code = dssdev->panel.hdmi_default_cea_code;
-		if (cea_code > 0 && cea_code < CEA_MODEDB_SIZE)
-			default_mode = cea_modes[cea_code];
-		else
-			default_mode = vesa_modes[4];
+		fb_find_mode(&screen_info, NULL, hdmi_options, cea_modes,
+				CEA_MODEDB_SIZE, &cea_modes[4], 0);
+		fb_var_to_videomode(&video_mode, &screen_info);
 
-		hdmi_set_timings(&default_mode, false);
+		hdmi_set_timings(&video_mode, false);
 	}
 
 	omapfb_fb2dss_timings(&hdmi.cfg.timings, &dssdev->panel.timings);

@@ -256,7 +256,81 @@ static struct panel_config generic_dpi_panels[] = {
 		.power_off_delay	= 0,
 		.name			= "powertip_ph480272t",
 	},
+	/*URT_UMSH_8423MD_T  */
+	{
+		{
+			.x_res		= 800,
+			.y_res		= 480,
+
+			.pixel_clock	= 28000,
+
+			.hsw		= 28,
+			.hfp		= 29,
+			.hbp		= 17,
+
+			.vsw		= 3,
+			.vfp		= 13,
+			.vbp		= 20,
+		},
+		.acbi			= 0x0,
+		.acb			= 0x0,
+		.config			= OMAP_DSS_LCD_TFT | OMAP_DSS_LCD_IVS |
+					  OMAP_DSS_LCD_IHS ,
+		.power_on_delay		= 0,
+		.power_off_delay	= 0,
+		.name			= "URT_UMSH_8423MD_T",
+	},	
+	/*ETM_070001ADH6*/
+	{
+		{
+			.x_res		= 800,
+			.y_res		= 480,
+
+			.pixel_clock	= 33000,
+
+			.hsw		= 127,
+			.hfp		= 129,
+			.hbp		= 17,
+
+			.vsw		= 3,
+			.vfp		= 32,
+			.vbp		= 20,
+		},
+		.acbi			= 0x0,
+		.acb			= 0x0,
+		.config			= OMAP_DSS_LCD_TFT | OMAP_DSS_LCD_IVS |
+					  OMAP_DSS_LCD_IHS ,
+		.power_on_delay		= 0,
+		.power_off_delay	= 0,
+		.name			= "ETM_070001ADH6",
+	},		
+	/*CHI-N070ICG*/
+	{
+		{
+			.x_res		= 1280,
+			.y_res		= 768,
+
+			.pixel_clock	= 67000,
+
+			.hsw		= 40,
+			.hfp		= 40,
+			.hbp		= 40,
+
+			.vsw		= 3,
+			.vfp		= 10,
+			.vbp		= 10,
+		},
+		.acbi			= 0x0,
+		.acb			= 0x0,
+		.config			= OMAP_DSS_LCD_TFT | OMAP_DSS_LCD_IVS |
+					  OMAP_DSS_LCD_IHS ,
+		.power_on_delay		= 0,
+		.power_off_delay	= 0,
+		.name			= "CHI-N070ICG",
+	},		
+
 };
+
 
 struct panel_drv_data {
 

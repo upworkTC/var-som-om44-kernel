@@ -185,6 +185,7 @@ static void dispc_save_context(void)
 	SR(DIVISORo(OMAP_DSS_CHANNEL_LCD));
 	if (dss_has_feature(FEAT_GLOBAL_ALPHA))
 		SR(GLOBAL_ALPHA);
+	SR(GLOBAL_BUFFER);
 	SR(SIZE_MGR(OMAP_DSS_CHANNEL_DIGIT));
 	SR(SIZE_MGR(OMAP_DSS_CHANNEL_LCD));
 	if (dss_has_feature(FEAT_MGR_LCD2)) {
@@ -339,6 +340,7 @@ static void dispc_restore_context(void)
 	RR(DIVISORo(OMAP_DSS_CHANNEL_LCD));
 	if (dss_has_feature(FEAT_GLOBAL_ALPHA))
 		RR(GLOBAL_ALPHA);
+	RR(GLOBAL_BUFFER);
 	RR(SIZE_MGR(OMAP_DSS_CHANNEL_DIGIT));
 	RR(SIZE_MGR(OMAP_DSS_CHANNEL_LCD));
 	if (dss_has_feature(FEAT_MGR_LCD2)) {
@@ -4451,6 +4453,13 @@ static void _omap_dispc_initial_config(void)
 
 	if (dss_has_feature(FEAT_GLOBAL_MFLAG))
 		dispc_write_reg(DISPC_GLOBAL_MFLAG, 2);
+
+	if (def_disp_name && (strcmp(def_disp_name, "hdmi") == 0)) {
+		REG_FLD_MOD(DISPC_GLOBAL_BUFFER, 0x0, 26, 24);
+		l = dispc_read_reg(DISPC_OVL_FIFO_SIZE_STATUS(OMAP_DSS_VIDEO3));
+		l >>= 1;
+		dispc.fifo_size[OMAP_DSS_GFX] += l;
+	}
 }
 
 /* DISPC HW IP initialisation */

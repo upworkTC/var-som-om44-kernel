@@ -18,6 +18,7 @@
 #include <linux/netdevice.h>
 #include <linux/etherdevice.h>
 #include <linux/ethtool.h>
+#include <linux/ctype.h>
 #include <linux/cache.h>
 #include <linux/crc32.h>
 #include <linux/mii.h>
@@ -381,7 +382,40 @@ static void ks8851_init_mac(struct ks8851_net *ks)
 {
 	struct net_device *dev = ks->netdev;
 
+#ifdef CONFIG_MACH_VAR_SOM_OM4460 /* NO EEPROM, PASS MAC ADDRESS */
+	{
+		char *ptr = NULL;
+		char *ptr_end;
+		char ethaddr[18];
+		int i;
+		u8 addr[ETH_ALEN];
+
+		pr_info("%s: get mac from cmd line.\n", "KS8851");
+		ptr = strstr(saved_command_line, "eth.ks8851=");
+		if (ptr && isdigit(*(ptr+11))) {
+			memcpy(ethaddr, ptr + 11, 17);
+			ethaddr[17] = 0;
+			printk(KERN_INFO "ethaddr parsed from commandline: %s\n", ethaddr);
+			ptr_end = ethaddr;
+			for (i = 0; i < ETH_ALEN; i++) {
+				addr[i] = simple_strtol(ptr_end, &ptr_end, 16) |
+				simple_strtol(ptr_end, &ptr_end, 16) << 4;
+				ptr_end++; /* skip ":" in  ethaddr */
+			}
+			memcpy(dev->dev_addr, addr, sizeof(addr));
+		} else {
+			static const uint8_t var_mac[ETH_ALEN] = { 0xF8, 0xDC, 0x7A, 0x00, 0x00, 0x01 };
+
+			memcpy(dev->dev_addr, var_mac, ETH_ALEN);
+			printk(KERN_ERR
+				"error: no MAC address on cmd. line, set to F8:DC:7A:00:00:01\n");
+		}
+	}
+#else   /* #ifdef CONFIG_MACH_VAR_SOM_OM4460 */
+	/* no eeprom, or eeprom values are invalid. generate random MAC */
 	random_ether_addr(dev->dev_addr);
+#endif  /* #ifdef CONFIG_MACH_VAR_SOM_OM4460 */
+
 	ks8851_write_mac_addr(dev);
 }
 
