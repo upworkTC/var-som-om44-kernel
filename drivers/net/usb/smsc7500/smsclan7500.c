@@ -100,7 +100,7 @@ int rx_Csum = FALSE;
 module_param(rx_Csum,bool, 0);
 MODULE_PARM_DESC(tx_Csum,"Enable Rx Hardware Checksum Offload");
 
-int TurboMode = TRUE;
+int TurboMode = FALSE;
 module_param(TurboMode,bool, 0);
 MODULE_PARM_DESC(TurboMode,"Enable Turbo Mode");
 

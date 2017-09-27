@@ -1108,7 +1108,7 @@ static void __init var_som_om44_reserve(void)
 	omap_reserve();
 }
 
-MACHINE_START(VAR_SOM_OM4460, "VAR-SOM-OM4460")
+MACHINE_START(VAR_SOM_OM4460, "VAR-SOM-OM4460-QUPB")
 	/* Maintainer: Uri Yosef - Variscite Ltd */
 	.boot_params	= 0x80000100,
 	.reserve	= var_som_om44_reserve,

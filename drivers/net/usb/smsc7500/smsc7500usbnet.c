@@ -100,7 +100,7 @@ MODULE_PARM_DESC (msg_level, "Override default message level");
 
 //operational_mode = 0----> low latency
 //operational_mode = 1----> low power
-static int operational_mode = 0;
+static int operational_mode = 1;
 module_param(operational_mode,int, 0);
 MODULE_PARM_DESC(operational_mode,"Enable operational mode");
 
